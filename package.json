@@ -1,0 +1,22 @@
+{
+  "name": "puzzle-bfs",
+  "version": "1.0.0",
+  "description": "Breadth-first search for solving a certain class of puzzles",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masak/puzzle-bfs.git"
+  },
+  "author": "Carl Mäsak",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/masak/puzzle-bfs/issues"
+  },
+  "homepage": "https://github.com/masak/puzzle-bfs#readme",
+  "dependencies": {
+    "typescript": "^2.4.1"
+  }
+}

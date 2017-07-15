@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "removeComments": true,
+        "sourceMap": true
+    },
+    "files": [
+        "index.ts"
+    ]
+}

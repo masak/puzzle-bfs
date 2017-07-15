@@ -34,7 +34,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
     while (queue.length) {
         let { state, trace } = queue.shift();
 
-        if (seen.has(state)) {
+        if (seen.has(puzzle.hashFn(state))) {
             continue;
         }
 

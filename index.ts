@@ -58,12 +58,13 @@ function solve <State> (puzzle: Puzzle<State>): void {
         for (let [description, move, isApplicable] of puzzle.validMoves) {
             if (isApplicable(state)) {
                 let newState = move(state);
-                if (!seen(newState) && !puzzle.isLosing(newState)) {
-                    queue.push({
-                        state: newState,
-                        trace: [...trace, description],
-                    });
+                if (seen(newState) || puzzle.isLosing(newState)) {
+                    continue;
                 }
+                queue.push({
+                    state: newState,
+                    trace: [...trace, description],
+                });
             }
         }
 

@@ -1,7 +1,11 @@
 declare let Set: any;
 
+declare interface ObjectConstructor {
+    assign(target: any, ...sources: any[]): any;
+}
+
 class Puzzle<State> {
-    public validMoves: Array<[string, (State) => State, (State) => boolean]> = [];
+    public validMoves: Array<[string, (State) => Partial<State>, (State) => boolean]> = [];
     public winningConditions: Array<[string, (State) => boolean]> = [];
     public losingConditions: Array<(State) => boolean> = [];
 
@@ -11,8 +15,12 @@ class Puzzle<State> {
         public hashFn: (State) => number) {
     }
 
-    validMove(description: string, move: (State) => State, isApplicable: (State) => boolean = () => true): this {
-        this.validMoves.push([description, move, isApplicable]);
+    validMove(
+        description: string,
+        update: (State) => Partial<State>,
+        isApplicable: (State) => boolean = () => true): this {
+
+        this.validMoves.push([description, update, isApplicable]);
         return this;
     }
 
@@ -55,9 +63,9 @@ function solve <State> (puzzle: Puzzle<State>): void {
             }
         }
 
-        for (let [description, move, isApplicable] of puzzle.validMoves) {
+        for (let [description, update, isApplicable] of puzzle.validMoves) {
             if (isApplicable(state)) {
-                let newState = move(state);
+                let newState = Object.assign({}, state, update(state));
                 if (seen(newState) || puzzle.isLosing(newState)) {
                     continue;
                 }
@@ -83,19 +91,19 @@ let puzzle1 = new Puzzle(
     (state) => state.boat ^ 31 * (state.fox ^ 31 * (state.goose ^ 31 * state.beans)),
 ).validMove(
     "Take the fox across.",
-    (state) => ({ ...state, boat: across(state.boat), fox: across(state.fox) }),
+    (state) => ({ boat: across(state.boat), fox: across(state.fox) }),
     (state) => state.boat === state.fox,
 ).validMove(
     "Take the goose across.",
-    (state) => ({ ...state, boat: across(state.boat), goose: across(state.goose) }),
+    (state) => ({ boat: across(state.boat), goose: across(state.goose) }),
     (state) => state.boat === state.goose,
 ).validMove(
     "Take the bag of beans across.",
-    (state) => ({ ...state, boat: across(state.boat), beans: across(state.beans) }),
+    (state) => ({ boat: across(state.boat), beans: across(state.beans) }),
     (state) => state.boat === state.beans,
 ).validMove(
     "Go across with an empty boat.",
-    (state) => ({ ...state, boat: across(state.boat) }),
+    (state) => ({ boat: across(state.boat) }),
 ).winningCondition(
     "All the animals are now on the other side.",
     (state) => [state.fox, state.goose, state.beans].every((l) => l === Shore.Other),
@@ -117,16 +125,16 @@ let puzzle2 = new Puzzle(
     (state) => state.threeLiter ^ 31 * state.fiveLiter,
 ).validMove(
     "Fill up the 3 L vessel.",
-    (state) => ({ ...state, threeLiter: 3 }),
+    (state) => ({ threeLiter: 3 }),
 ).validMove(
     "Fill up the 5 L vessel.",
-    (state) => ({ ...state, fiveLiter: 5 }),
+    (state) => ({ fiveLiter: 5 }),
 ).validMove(
     "Empty the 3 L vessel.",
-    (state) => ({ ...state, threeLiter: 0 }),
+    (state) => ({ threeLiter: 0 }),
 ).validMove(
     "Empty the 5 L vessel.",
-    (state) => ({ ...state, fiveLiter: 0 }),
+    (state) => ({ fiveLiter: 0 }),
 ).validMove(
     "Fill the 3 L vessel from the 5 L vessel.",
     (state) => ({

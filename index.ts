@@ -30,11 +30,15 @@ class Puzzle<State> {
 function solve <State> (puzzle: Puzzle<State>): void {
     let queue = [{ state: puzzle.initialState, trace: [puzzle.initialDescription] }];
 
-    let seen = new Set();
+    let seenSet = new Set();
+    function seen(state: State) {
+        return seenSet.has(puzzle.hashFn(state));
+    }
+
     while (queue.length) {
         let { state, trace } = queue.shift();
 
-        if (seen.has(puzzle.hashFn(state))) {
+        if (seen(state)) {
             continue;
         }
 
@@ -50,7 +54,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
         for (let [description, move, isApplicable] of puzzle.validMoves) {
             if (isApplicable(state)) {
                 let newState = move(state);
-                if (!seen.has(puzzle.hashFn(newState)) && !puzzle.losingConditions.some((isLosing) => isLosing(newState))) {
+                if (!seen(newState) && !puzzle.losingConditions.some((isLosing) => isLosing(newState))) {
                     queue.push({
                         state: newState,
                         trace: [...trace, description],
@@ -59,7 +63,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
             }
         }
 
-        seen.add(puzzle.hashFn(state));
+        seenSet.add(puzzle.hashFn(state));
     }
 
     console.log("There's no solution.");

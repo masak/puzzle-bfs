@@ -77,7 +77,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
 enum Shore { One, Other }
 function across(location: Shore) { return location === Shore.One ? Shore.Other : Shore.One; }
 
-let puzzle = new Puzzle(
+let puzzle1 = new Puzzle(
     "The boat and all the animals are on the start shore.",
     { boat: Shore.One, fox: Shore.One, goose: Shore.One, beans: Shore.One },
     (state) => state.boat ^ 31 * (state.fox ^ 31 * (state.goose ^ 31 * state.beans)),
@@ -107,4 +107,41 @@ let puzzle = new Puzzle(
     (state) => state.boat !== state.goose && state.boat !== state.beans,
 );
 
-solve(puzzle);
+solve(puzzle1);
+
+console.log("---");
+
+let puzzle2 = new Puzzle(
+    "Both vessels are empty.",
+    { threeLiter: 0, fiveLiter: 0 },
+    (state) => state.threeLiter ^ 31 * state.fiveLiter,
+).validMove(
+    "Fill up the 3 L vessel.",
+    (state) => ({ ...state, threeLiter: 3 }),
+).validMove(
+    "Fill up the 5 L vessel.",
+    (state) => ({ ...state, fiveLiter: 5 }),
+).validMove(
+    "Empty the 3 L vessel.",
+    (state) => ({ ...state, threeLiter: 0 }),
+).validMove(
+    "Empty the 5 L vessel.",
+    (state) => ({ ...state, fiveLiter: 0 }),
+).validMove(
+    "Fill the 3 L vessel from the 5 L vessel.",
+    (state) => ({
+        threeLiter: Math.min(3, state.threeLiter + state.fiveLiter),
+        fiveLiter: state.threeLiter + state.fiveLiter - Math.min(3, state.threeLiter + state.fiveLiter),
+    }),
+).validMove(
+    "Fill the 5 L vessel from the 3 L vessel.",
+    (state) => ({
+        fiveLiter: Math.min(5, state.threeLiter + state.fiveLiter),
+        threeLiter: state.threeLiter + state.fiveLiter - Math.min(5, state.threeLiter + state.fiveLiter),
+    }),
+).winningCondition(
+    "The 5 L vessel now has 4 L of water.",
+    (state) => state.fiveLiter === 4,
+);
+
+solve(puzzle2);

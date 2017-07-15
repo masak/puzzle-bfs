@@ -25,6 +25,10 @@ class Puzzle<State> {
         this.losingConditions.push(isLosing);
         return this;
     }
+
+    isLosing(state: State) {
+        return this.losingConditions.some((isLosing) => isLosing(state));
+    }
 }
     
 function solve <State> (puzzle: Puzzle<State>): void {
@@ -54,7 +58,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
         for (let [description, move, isApplicable] of puzzle.validMoves) {
             if (isApplicable(state)) {
                 let newState = move(state);
-                if (!seen(newState) && !puzzle.losingConditions.some((isLosing) => isLosing(newState))) {
+                if (!seen(newState) && !puzzle.isLosing(newState)) {
                     queue.push({
                         state: newState,
                         trace: [...trace, description],

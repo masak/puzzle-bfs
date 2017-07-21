@@ -174,6 +174,10 @@ function moveDisk(from: Rod, to: Rod) {
     });
 }
 
+function decreasingOrder(disks: number[]) {
+    return String(disks) === String(disks.slice().sort().reverse());
+}
+
 let puzzle3 = new Puzzle(
     "All the disks are on the left rod.",
     { left: [3, 2, 1], middle: [], right: [] },
@@ -201,7 +205,7 @@ let puzzle3 = new Puzzle(
     (state) => state.right.length === 3,
 ).losingCondition(
     "Wrong order of disks on a rod.",
-    (state) => [state.left, state.middle, state.right].some((rod) => String(rod) !== String(rod.slice().sort().reverse())),
+    (state) => Object.keys(state).some((rod) => !decreasingOrder(state[rod])),
 );
 
 solve(puzzle3);

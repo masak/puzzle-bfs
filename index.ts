@@ -15,11 +15,7 @@ class Puzzle<State> {
         public hashFn: (State) => number) {
     }
 
-    validMove(
-        description: string,
-        update: (State) => Partial<State>,
-        isApplicable: (State) => boolean = () => true): this {
-
+    validMove(description: string, update: (State) => Partial<State>, isApplicable: (State) => boolean = () => true): this {
         this.validMoves.push([description, update, isApplicable]);
         return this;
     }

@@ -38,8 +38,13 @@ class Puzzle<State> {
         return this.losingConditions.some((isLosing) => isLosing(state));
     }
 }
-    
+
 function solve <State> (puzzle: Puzzle<State>): void {
+    if (puzzle.winningConditions.length === 0) {
+        console.log("There's no way to solve this puzzle because there are no winning conditions.");
+        return;
+    }
+
     let queue = [{ state: puzzle.initialState, trace: [puzzle.initialDescription] }];
 
     let seenSet = new Set();
@@ -153,3 +158,54 @@ let puzzle2 = new Puzzle(
 );
 
 solve(puzzle2);
+
+console.log("---");
+
+function hashArray(array) {
+    return (array[0] || -1) ^ 31 * ((array[1] || -1) ^ 31 * (array[2] || -1));
+}
+
+function topDisk(array) {
+    return array[array.length - 1];
+}
+
+type Rod = "left" | "middle" | "right";
+
+function moveDisk(from: Rod, to: Rod) {
+    return (state) => ({
+        [from]: state[from].slice(0, state[from].length - 1),
+        [to]: [...state[to], topDisk(state[from])],
+    });
+}
+
+let puzzle3 = new Puzzle(
+    "All the disks are on the left rod.",
+    { left: [3, 2, 1], middle: [], right: [] },
+    (state) => hashArray(state.left) ^ 31 * (hashArray(state.middle) ^ 31 * (hashArray(state.right))),
+).validMove(
+    "Move left to middle.",
+    moveDisk("left", "middle"),
+).validMove(
+    "Move left to right.",
+    moveDisk("left", "right"),
+).validMove(
+    "Move middle to left.",
+    moveDisk("middle", "left"),
+).validMove(
+    "Move middle to right.",
+    moveDisk("middle", "right"),
+).validMove(
+    "Move right to left.",
+    moveDisk("right", "left"),
+).validMove(
+    "Move right to middle.",
+    moveDisk("right", "middle"),
+).winningCondition(
+    "All the disks are now on the right rod.",
+    (state) => state.right.length === 3,
+).losingCondition(
+    "Wrong order of disks on a rod.",
+    (state) => [state.left, state.middle, state.right].some((rod) => String(rod) !== String(rod.slice().sort().reverse())),
+);
+
+solve(puzzle3);

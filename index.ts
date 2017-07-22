@@ -1,3 +1,5 @@
+import * as hash from 'object-hash';
+
 declare let Set: any;
 
 declare interface ObjectConstructor {
@@ -9,10 +11,7 @@ class Puzzle<State> {
     public winningConditions: Array<[string, (State) => boolean]> = [];
     public losingConditions: Array<(State) => boolean> = [];
 
-    constructor(
-        public initialDescription: string,
-        public initialState: State,
-        public hashFn: (State) => number) {
+    constructor(public initialDescription: string, public initialState: State) {
     }
 
     validMove(description: string, update: (State) => Partial<State>, isApplicable: (State) => boolean = () => true): this {
@@ -44,14 +43,11 @@ function solve <State> (puzzle: Puzzle<State>): void {
     let queue = [{ state: puzzle.initialState, trace: [puzzle.initialDescription] }];
 
     let seenSet = new Set();
-    function seen(state: State) {
-        return seenSet.has(puzzle.hashFn(state));
-    }
 
     while (queue.length) {
         let { state, trace } = queue.shift();
 
-        if (seen(state)) {
+        if (seenSet.has(hash(state))) {
             continue;
         }
 
@@ -66,8 +62,8 @@ function solve <State> (puzzle: Puzzle<State>): void {
 
         for (let [description, update, isApplicable] of puzzle.validMoves) {
             if (isApplicable(state)) {
-                let newState = Object.assign({}, state, update(state));
-                if (seen(newState) || puzzle.isLosing(newState)) {
+                let newState = (<any>Object).assign({}, state, update(state));
+                if (seenSet.has(hash(newState)) || puzzle.isLosing(newState)) {
                     continue;
                 }
                 queue.push({
@@ -77,7 +73,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
             }
         }
 
-        seenSet.add(puzzle.hashFn(state));
+        seenSet.add(hash(state));
     }
 
     console.log("There's no solution.");
@@ -86,7 +82,6 @@ function solve <State> (puzzle: Puzzle<State>): void {
 let puzzle1 = new Puzzle(
     "Both vessels are empty.",
     { threeLiter: 0, fiveLiter: 0 },
-    (state) => state.threeLiter ^ 31 * state.fiveLiter,
 ).validMove(
     "Fill up the 3 L vessel.",
     (state) => ({ threeLiter: 3 }),
@@ -126,7 +121,6 @@ function across(location: Shore) { return location === Shore.One ? Shore.Other :
 let puzzle2 = new Puzzle(
     "The boat and all the animals are on the start shore.",
     { boat: Shore.One, fox: Shore.One, goose: Shore.One, beans: Shore.One },
-    (state) => state.boat ^ 31 * (state.fox ^ 31 * (state.goose ^ 31 * state.beans)),
 ).validMove(
     "Take the fox across.",
     (state) => ({ boat: across(state.boat), fox: across(state.fox) }),
@@ -181,7 +175,6 @@ function decreasingOrder(disks: number[]) {
 let puzzle3 = new Puzzle(
     "All the disks are on the left rod.",
     { left: [3, 2, 1], middle: [], right: [] },
-    (state) => hashArray(state.left) ^ 31 * (hashArray(state.middle) ^ 31 * (hashArray(state.right))),
 ).validMove(
     "Move left to middle.",
     moveDisk("left", "middle"),

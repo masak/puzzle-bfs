@@ -172,27 +172,18 @@ function decreasingOrder(disks: number[]) {
     return String(disks) === String(disks.slice().sort().reverse());
 }
 
+const MOVES: Array<{ from: Rod, to: Rod }> = [
+    { from: "left", to: "middle" },
+    { from: "left", to: "right" },
+    { from: "middle", to: "left" },
+    { from: "middle", to: "right" },
+    { from: "right", to: "left" },
+    { from: "right", to: "middle" },
+];
+
 let puzzle3 = new Puzzle(
     "All the disks are on the left rod.",
     { left: [3, 2, 1], middle: [], right: [] },
-).validMove(
-    "Move left to middle.",
-    moveDisk("left", "middle"),
-).validMove(
-    "Move left to right.",
-    moveDisk("left", "right"),
-).validMove(
-    "Move middle to left.",
-    moveDisk("middle", "left"),
-).validMove(
-    "Move middle to right.",
-    moveDisk("middle", "right"),
-).validMove(
-    "Move right to left.",
-    moveDisk("right", "left"),
-).validMove(
-    "Move right to middle.",
-    moveDisk("right", "middle"),
 ).winningCondition(
     "All the disks are now on the right rod.",
     (state) => state.right.length === 3,
@@ -200,5 +191,9 @@ let puzzle3 = new Puzzle(
     "Wrong order of disks on a rod.",
     (state) => Object.keys(state).some((rod) => !decreasingOrder(state[rod])),
 );
+
+for (let { from, to } of MOVES) {
+    puzzle3.validMove(`Move ${from} to ${to}.`, moveDisk(from, to), (state) => state[from].length > 0);
+}
 
 solve(puzzle3);

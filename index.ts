@@ -151,10 +151,6 @@ solve(puzzle2);
 
 console.log("---");
 
-function hashArray(array) {
-    return (array[0] || -1) ^ 31 * ((array[1] || -1) ^ 31 * (array[2] || -1));
-}
-
 function topDisk(array) {
     return array[array.length - 1];
 }

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/masak/puzzle-bfs#readme",
   "dependencies": {
+    "@types/object-hash": "^1.2.0",
     "object-hash": "^1.1.8",
     "typescript": "^2.4.1"
   }

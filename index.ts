@@ -45,7 +45,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
     let seenSet = new Set();
 
     while (queue.length) {
-        let { state, trace } = queue.shift();
+        let { state, trace } = queue.shift() as { state: State, trace: string[] };
 
         if (seenSet.has(hash(state))) {
             continue;
@@ -151,14 +151,14 @@ solve(puzzle2);
 
 console.log("---");
 
-function topDisk(array) {
+function topDisk(array: number[]) {
     return array[array.length - 1];
 }
 
 type Rod = "left" | "middle" | "right";
 
 function moveDisk(from: Rod, to: Rod) {
-    return (state) => ({
+    return (state: { left: number[], middle: number[], right: number[] }) => ({
         [from]: state[from].slice(0, state[from].length - 1),
         [to]: [...state[to], topDisk(state[from])],
     });

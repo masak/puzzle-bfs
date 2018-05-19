@@ -22,15 +22,10 @@ interface Puzzle<State> {
 
 function solve <State> (puzzle: Puzzle<State>): void {
     let queue = [{ state: puzzle.initialState, trace: [puzzle.initialDescription] }];
-
-    let seenSet = new Set();
+    let queuedSet = new Set([puzzle.initialState]);
 
     while (queue.length) {
         let { state, trace } = queue.shift() as { state: State, trace: string[] };
-
-        if (seenSet.has(hash(state))) {
-            continue;
-        }
 
         if (puzzle.winningCondition(state)) {
             for (let step of trace) {
@@ -43,17 +38,16 @@ function solve <State> (puzzle: Puzzle<State>): void {
         for (let move of puzzle.validMoves) {
             if (!move.isApplicable || move.isApplicable(state)) {
                 let newState = { ...(state as any), ...(move.update(state) as any) } as State;
-                if (seenSet.has(hash(newState)) || puzzle.losingConditions && puzzle.losingConditions.some(c => c(newState))) {
+                if (queuedSet.has(hash(newState)) || puzzle.losingConditions && puzzle.losingConditions.some(c => c(newState))) {
                     continue;
                 }
                 queue.push({
                     state: newState,
                     trace: [...trace, move.description],
                 });
+                queuedSet.add(hash(newState));
             }
         }
-
-        seenSet.add(hash(state));
     }
 
     console.log("There's no solution.");

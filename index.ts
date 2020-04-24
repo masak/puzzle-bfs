@@ -22,7 +22,7 @@ function solve <State> (puzzle: Puzzle<State>): void {
     let queuedSet = new Set([puzzle.initialState]);
 
     while (queue.length) {
-        let { state, trace } = queue.shift() as { state: State, trace: string[] };
+        let { state, trace } = queue.shift()!;
 
         if (puzzle.winningCondition(state)) {
             for (let step of trace) {

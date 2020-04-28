@@ -19,7 +19,7 @@ interface Puzzle<State> {
 
 function solve <State> (puzzle: Puzzle<State>): void {
     let queue = [{ state: puzzle.initialState, trace: [puzzle.initialDescription] }];
-    let queuedSet = new Set([puzzle.initialState]);
+    let queuedSet = new Set([hash(puzzle.initialState)]);
 
     while (queue.length) {
         let { state, trace } = queue.shift()!;

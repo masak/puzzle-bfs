@@ -21,8 +21,10 @@ function solve <State> (puzzle: Puzzle<State>): void {
     let queue = [{ state: puzzle.initialState, trace: [puzzle.initialDescription] }];
     let queuedSet = new Set([hash(puzzle.initialState)]);
 
-    while (queue.length) {
-        let { state, trace } = queue.shift()!;
+    let elem: { state: State, trace: string[] };
+
+    while (elem = queue.shift()!) {
+        let { state, trace } = elem;
 
         if (puzzle.winningCondition(state)) {
             for (let step of trace) {

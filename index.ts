@@ -199,3 +199,94 @@ let puzzle3: Puzzle<Hanoi> = {
 };
 
 solve(puzzle3);
+
+console.log("---");
+
+interface Level {
+    catX: number;
+    catY: number;
+    sizeX: 5,
+    sizeY: 5,
+    level: boolean[][];
+}
+
+function moveUp(state: Level) {
+    let { catX, catY, level } = state;
+    level = JSON.parse(JSON.stringify(level));
+    while (catY > 0 && !level[catY-1][catX]) {
+        catY--;
+        level[catY][catX] = true;
+    }
+    return { ...state, catY, level };
+}
+
+function moveDown(state: Level) {
+    let { catX, catY, level, sizeY } = state;
+    level = JSON.parse(JSON.stringify(level));
+    while (catY < sizeY - 1 && !level[catY+1][catX]) {
+        catY++;
+        level[catY][catX] = true;
+    }
+    return { ...state, catY, level };
+}
+
+function moveLeft(state: Level) {
+    let { catX, catY, level } = state;
+    level = JSON.parse(JSON.stringify(level));
+    while (catX > 0 && !level[catY][catX-1]) {
+        catX--;
+        level[catY][catX] = true;
+    }
+    return { ...state, catX, level };
+}
+
+function moveRight(state: Level) {
+    let { catX, catY, level, sizeX } = state;
+    level = JSON.parse(JSON.stringify(level));
+    while (catX < sizeX - 1 && !level[catY][catX+1]) {
+        catX++;
+        level[catY][catX] = true;
+    }
+    return { ...state, catX, level };
+}
+
+let puzzle4: Puzzle<Level> = {
+    initialDescription: "The cat is in its starting position.",
+    initialState: {
+        catX: 1,
+        catY: 2,
+        sizeX: 5,
+        sizeY: 5,
+        level: [
+            [false, false, false, false, false],
+            [false, false, false, false, false],
+            [false, true, false, false, false],
+            [false, false, false, true, false],
+            [false, false, false, false, false],
+        ],
+    },
+
+    validMoves: (state: Level) => [
+        {
+            description: "Move up.",
+            newState: moveUp(state),
+        },
+        {
+            description: "Move down.",
+            newState: moveDown(state),
+        },
+        {
+            description: "Move left.",
+            newState: moveLeft(state),
+        },
+        {
+            description: "Move right.",
+            newState: moveRight(state),
+        },
+    ].filter((move: any) => move.newState.catX != state.catX || move.newState.catY != state.catY),
+
+    winningDescription: "The whole level is filled.",
+    winningCondition: (state: Level) => state.level.every((row) => row.every((cell) => cell)),
+};
+
+solve(puzzle4);

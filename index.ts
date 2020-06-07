@@ -210,9 +210,13 @@ interface Level {
     level: boolean[][];
 }
 
+function clone2dArray(array: boolean[][]) {
+    return array.map((row) => [...row]);
+}
+
 function moveUp(state: Level) {
     let { catX, catY, level } = state;
-    level = JSON.parse(JSON.stringify(level));
+    level = clone2dArray(level);
     while (catY > 0 && !level[catY-1][catX]) {
         catY--;
         level[catY][catX] = true;
@@ -222,7 +226,7 @@ function moveUp(state: Level) {
 
 function moveDown(state: Level) {
     let { catX, catY, level, sizeY } = state;
-    level = JSON.parse(JSON.stringify(level));
+    level = clone2dArray(level);
     while (catY < sizeY - 1 && !level[catY+1][catX]) {
         catY++;
         level[catY][catX] = true;
@@ -232,7 +236,7 @@ function moveDown(state: Level) {
 
 function moveLeft(state: Level) {
     let { catX, catY, level } = state;
-    level = JSON.parse(JSON.stringify(level));
+    level = clone2dArray(level);
     while (catX > 0 && !level[catY][catX-1]) {
         catX--;
         level[catY][catX] = true;
@@ -242,7 +246,7 @@ function moveLeft(state: Level) {
 
 function moveRight(state: Level) {
     let { catX, catY, level, sizeX } = state;
-    level = JSON.parse(JSON.stringify(level));
+    level = clone2dArray(level);
     while (catX < sizeX - 1 && !level[catY][catX+1]) {
         catX++;
         level[catY][catX] = true;

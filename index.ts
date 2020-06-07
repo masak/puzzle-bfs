@@ -287,7 +287,7 @@ let puzzle4: Puzzle<Level> = {
             description: "Move right.",
             newState: moveRight(state),
         },
-    ].filter((move: any) => move.newState.catX != state.catX || move.newState.catY != state.catY),
+    ].filter(({ newState }) => newState.catX != state.catX || newState.catY != state.catY),
 
     winningDescription: "The whole level is filled.",
     winningCondition: (state: Level) => state.level.every((row) => row.every((cell) => cell)),
